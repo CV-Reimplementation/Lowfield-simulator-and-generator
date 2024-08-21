@@ -22,6 +22,14 @@ and pressing enter. The GUI will appear shortly after.
 
 The GUI can also be used without running the code via an application. This is an executable (.exe) file that can be used on Windows systems. As of now there is now application for Mac operators but softwares such as WineBottler (https://winebottler.kronenberg.org/) can be used to run Windows programs on Mac.
 
+When the GUI opens, you can decide to use either the simulator of the generator. The simulator enables the user to interact with simulated data and different MRI parameters, apply some basic image processing tools, import and see the effect of B0, T1, and T2 relaxation maps.
+
+![Simu2](https://github.com/user-attachments/assets/db86f72b-a90c-49cc-a3a6-07db8dabe1c0)
+
+The generator lets the user create either one or multiple simulated datasets. Every generated data comes with a high SNR image, without any noise, and one lower SNR image, the noise level can be defined by the user. As of now, the simulated data can be saved as numpy array or nifti files.
+
+![Gene2](https://github.com/user-attachments/assets/53ab8259-0130-424b-8e71-3bebeaf34882)
+
 
 
 
