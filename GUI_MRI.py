@@ -124,31 +124,31 @@ def tutorial_simu():
     Tutorial.title("Tutorial")
     
     # The images have to come from the correct folder
-    image1 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial\Slide1.jpg"))
-    image2 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial\Slide2.jpg"))
-    image3 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial\Slide3.jpg"))
-    image4 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial\Slide4.jpg"))
-    image5 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial\Slide5.jpg"))
-    image6 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial\Slide6.jpg"))
-    image7 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial\Slide7.jpg"))
-    image8 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial\Slide8.jpg"))
-    image9 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial\Slide9.jpg"))
-    image10 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial\Slide10.jpg"))
-    image11 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial\Slide11.jpg"))
-    image12 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial\Slide12.jpg"))
-    image13 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial\Slide13.jpg"))
-    image14 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial\Slide14.jpg"))
-    image15 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial\Slide15.jpg"))
-    image16 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial\Slide16.jpg"))
-    image17 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial\Slide17.jpg"))
-    image18 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial\Slide18.jpg"))
-    image19 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial\Slide19.jpg"))
-    image20 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial\Slide20.jpg"))
-    image21 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial\Slide21.jpg"))
-    image22 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial\Slide22.jpg"))
-    image23 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial\Slide23.jpg"))
-    image24 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial\Slide24.jpg"))
-    image25 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial\Slide25.jpg"))
+    image1 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial simulator\Slide1.jpg"))
+    image2 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial simulator\Slide2.jpg"))
+    image3 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial simulator\Slide3.jpg"))
+    image4 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial simulator\Slide4.jpg"))
+    image5 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial simulator\Slide5.jpg"))
+    image6 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial simulator\Slide6.jpg"))
+    image7 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial simulator\Slide7.jpg"))
+    image8 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial simulator\Slide8.jpg"))
+    image9 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial simulator\Slide9.jpg"))
+    image10 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial simulator\Slide10.jpg"))
+    image11 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial simulator\Slide11.jpg"))
+    image12 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial simulator\Slide12.jpg"))
+    image13 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial simulator\Slide13.jpg"))
+    image14 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial simulator\Slide14.jpg"))
+    image15 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial simulator\Slide15.jpg"))
+    image16 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial simulator\Slide16.jpg"))
+    image17 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial simulator\Slide17.jpg"))
+    image18 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial simulator\Slide18.jpg"))
+    image19 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial simulator\Slide19.jpg"))
+    image20 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial simulator\Slide20.jpg"))
+    image21 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial simulator\Slide21.jpg"))
+    image22 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial simulator\Slide22.jpg"))
+    image23 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial simulator\Slide23.jpg"))
+    image24 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial simulator\Slide24.jpg"))
+    image25 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial simulator\Slide25.jpg"))
     
     # Creating a list of all images
     image_list = [image1, image2, image3, image4, image5, image6, image7, image8, image9, image10, image11, image12, image13, image14, image15, image16, image17, image18, image19, image20, image21, image22, image23, image24] 
@@ -1296,6 +1296,19 @@ def h_open(key):
     canvas3.draw()
     canvas3.get_tk_widget().grid(row = 1, column = 1, rowspan = 4) 
     plt.close() 
+    
+    m = SNR_length
+    # std box
+    A = int(SNR_noise_box_center[1])
+    B = int(SNR_noise_box_center[0])
+    # mean box
+    a = int(SNR_mean_box_center[1])
+    b = int(SNR_mean_box_center[0])
+
+    snr = snr_homemade(np.rot90(final_im_ax),A-m,A+m,B-m,B+m,a-m,a+m,b-m,b+m)
+    SNR_num_label.grid_forget()
+    SNR_num_label = Label(frame11, text = str(np.abs(round(snr,2))), font=("Helvetica", 12))
+    SNR_num_label.grid(row = 2, column = 1)
 
 def history(se):
     """
@@ -1947,6 +1960,21 @@ def run():
         plt.close()
                      
         if SNR_define == 'yes':    
+            
+            m = SNR_length
+            # std box
+            A = int(SNR_noise_box_center[1])
+            B = int(SNR_noise_box_center[0])
+            # mean box
+            a = int(SNR_mean_box_center[1])
+            b = int(SNR_mean_box_center[0])
+            
+            snr = snr_homemade(np.rot90(final_im_ax),A-m,A+m,B-m,B+m,a-m,a+m,b-m,b+m)
+            SNR_num_label.grid_forget()
+            SNR_num_label = Label(frame11, text = str(np.abs(round(snr,2))), font=("Helvetica", 12))
+            SNR_num_label.grid(row = 2, column = 1)
+            
+            """
             noise_col = SNR_noise_box_center[0]
             noise_row = SNR_noise_box_center[1]
             mean_col = SNR_mean_box_center[0]
@@ -1966,34 +1994,17 @@ def run():
             SNR_num_label.grid_forget()
             SNR_num_label = Label(frame11, text = str(np.abs(round(snr,2))), font=("Helvetica", 12))
             SNR_num_label.grid(row = 2, column = 1) 
+            """
             
         elif SNR_define == 'ori':
             
             m = SNR_length
-            M = 2*SNR_length
-            arrstd = np.ones(M)
-            arrm = np.ones(M)
-            arr2 = np.zeros((Data_mat[1], Data_mat[0])) # This array is only zeros with 2 white boxes
             # std box
             A = int(SNR_noise_box_center[1])
             B = int(SNR_noise_box_center[0])
-            arr2[A-m:A+m, B-m] = arrstd
-            arr2[A-m:A+m, B+m] = arrstd
-            arr2[A-m, B-m:B+m] = arrstd
-            arr2[A+m, B-m:B+m] = arrstd
             # mean box
             a = int(SNR_mean_box_center[1])
             b = int(SNR_mean_box_center[0])
-            arr2[a-m:a+m, b-m] = arrm
-            arr2[a-m:a+m, b+m] = arrm
-            arr2[a-m, b-m:b+m] = arrm
-            arr2[a+m, b-m:b+m] = arrm
-
-            sli = Data_mat[2]
-            sli = sli//2
-            #plt.imshow(np.rot90(final[:,:,sli] + 150*arr2), cmap = 'gray')
-            #plt.title('SNR = ' + str(snr_homemade(np.rot90(final[:,:,sli]),A-m,A+m,B-m,B+m,a-m,a+m,b-m,b+m)))
-            #plt.show()
             
             snr = snr_homemade(np.rot90(final_im_ax),A-m,A+m,B-m,B+m,a-m,a+m,b-m,b+m)
             SNR_num_label.grid_forget()
@@ -2361,32 +2372,19 @@ def lowpass(s):
     canvas3.get_tk_widget().grid(row = 1, column = 3, rowspan = 4)      
     plt.close()
     
-    if SNR_define == 'yes':    
-        noise_col = SNR_noise_box_center[0]
-        noise_row = SNR_noise_box_center[1]
-        mean_col = SNR_mean_box_center[0]
-        mean_row = SNR_mean_box_center[1]
+    m = SNR_length
+    # std box
+    A = int(SNR_noise_box_center[1])
+    B = int(SNR_noise_box_center[0])
+    # mean box
+    a = int(SNR_mean_box_center[1])
+    b = int(SNR_mean_box_center[0])
 
-        n1 = noise_row - SNR_length
-        n2 = noise_row + SNR_length
-        n3 = noise_col - SNR_length
-        n4 = noise_col + SNR_length
-
-        m1 = mean_row - SNR_length
-        m2 = mean_row + SNR_length
-        m3 = mean_col - SNR_length
-        m4 = mean_col + SNR_length
-
-        snr = snr_homemade(np.rot90(final_im_ax),n1, n2, n3, n4, m1, m2, m3, m4)
-        SNR_num_label.grid_forget()
-        SNR_num_label = Label(frame11, text = str(np.abs(round(snr,2))), font=("Helvetica", 12))
-        SNR_num_label.grid(row = 2, column = 1) 
-
-    elif SNR_define == 'ori':
-        SNR_num_label.grid_forget()
-        SNR_num_label = Label(frame11, text = 'SNR not define!', font=("Helvetica", 12))
-        SNR_num_label.grid(row = 2, column = 1)
-        
+    snr = snr_homemade(np.rot90(final_im_ax),A-m,A+m,B-m,B+m,a-m,a+m,b-m,b+m)
+    SNR_num_label.grid_forget()
+    SNR_num_label = Label(frame11, text = str(np.abs(round(snr,2))), font=("Helvetica", 12))
+    SNR_num_label.grid(row = 2, column = 1)
+    
     # Update the history frame
     history('low')
     
@@ -2459,32 +2457,19 @@ def highpass(s):
     canvas3.get_tk_widget().grid(row = 1, column = 3, rowspan = 4)      
     plt.close()
     
-    if SNR_define == 'yes':    
-        noise_col = SNR_noise_box_center[0]
-        noise_row = SNR_noise_box_center[1]
-        mean_col = SNR_mean_box_center[0]
-        mean_row = SNR_mean_box_center[1]
+    m = SNR_length
+    # std box
+    A = int(SNR_noise_box_center[1])
+    B = int(SNR_noise_box_center[0])
+    # mean box
+    a = int(SNR_mean_box_center[1])
+    b = int(SNR_mean_box_center[0])
 
-        n1 = noise_row - SNR_length
-        n2 = noise_row + SNR_length
-        n3 = noise_col - SNR_length
-        n4 = noise_col + SNR_length
-
-        m1 = mean_row - SNR_length
-        m2 = mean_row + SNR_length
-        m3 = mean_col - SNR_length
-        m4 = mean_col + SNR_length
-
-        snr = snr_homemade(np.rot90(final_im_ax),n1, n2, n3, n4, m1, m2, m3, m4)
-        SNR_num_label.grid_forget()
-        SNR_num_label = Label(frame11, text = str(np.abs(round(snr,2))), font=("Helvetica", 12))
-        SNR_num_label.grid(row = 2, column = 1) 
-
-    elif SNR_define == 'ori':
-        SNR_num_label.grid_forget()
-        SNR_num_label = Label(frame11, text = 'SNR not define!', font=("Helvetica", 12))
-        SNR_num_label.grid(row = 2, column = 1)
-
+    snr = snr_homemade(np.rot90(final_im_ax),A-m,A+m,B-m,B+m,a-m,a+m,b-m,b+m)
+    SNR_num_label.grid_forget()
+    SNR_num_label = Label(frame11, text = str(np.abs(round(snr,2))), font=("Helvetica", 12))
+    SNR_num_label.grid(row = 2, column = 1)
+    
     # Update the history frame
     history('high')
         
@@ -2555,31 +2540,18 @@ def gauss(sig):
     canvas3.get_tk_widget().grid(row = 1, column = 3, rowspan = 4)      
     plt.close()
     
-    if SNR_define == 'yes':    
-        noise_col = SNR_noise_box_center[0]
-        noise_row = SNR_noise_box_center[1]
-        mean_col = SNR_mean_box_center[0]
-        mean_row = SNR_mean_box_center[1]
+    m = SNR_length
+    # std box
+    A = int(SNR_noise_box_center[1])
+    B = int(SNR_noise_box_center[0])
+    # mean box
+    a = int(SNR_mean_box_center[1])
+    b = int(SNR_mean_box_center[0])
 
-        n1 = noise_row - SNR_length
-        n2 = noise_row + SNR_length
-        n3 = noise_col - SNR_length
-        n4 = noise_col + SNR_length
-
-        m1 = mean_row - SNR_length
-        m2 = mean_row + SNR_length
-        m3 = mean_col - SNR_length
-        m4 = mean_col + SNR_length
-
-        snr = snr_homemade(np.rot90(final_im_ax),n1, n2, n3, n4, m1, m2, m3, m4)
-        SNR_num_label.grid_forget()
-        SNR_num_label = Label(frame11, text = str(np.abs(round(snr,2))), font=("Helvetica", 12))
-        SNR_num_label.grid(row = 2, column = 1) 
-
-    elif SNR_define == 'ori':
-        SNR_num_label.grid_forget()
-        SNR_num_label = Label(frame11, text = 'SNR not define!', font=("Helvetica", 12))
-        SNR_num_label.grid(row = 2, column = 1)
+    snr = snr_homemade(np.rot90(final_im_ax),A-m,A+m,B-m,B+m,a-m,a+m,b-m,b+m)
+    SNR_num_label.grid_forget()
+    SNR_num_label = Label(frame11, text = str(np.abs(round(snr,2))), font=("Helvetica", 12))
+    SNR_num_label.grid(row = 2, column = 1)
         
     # Update the history frame
     history('gauss')
@@ -2666,31 +2638,18 @@ def non_local(H, s, d):
     canvas3.get_tk_widget().grid(row = 1, column = 3, rowspan = 4)      
     plt.close()
     
-    if SNR_define == 'yes':    
-        noise_col = SNR_noise_box_center[0]
-        noise_row = SNR_noise_box_center[1]
-        mean_col = SNR_mean_box_center[0]
-        mean_row = SNR_mean_box_center[1]
+    m = SNR_length
+    # std box
+    A = int(SNR_noise_box_center[1])
+    B = int(SNR_noise_box_center[0])
+    # mean box
+    a = int(SNR_mean_box_center[1])
+    b = int(SNR_mean_box_center[0])
 
-        n1 = noise_row - SNR_length
-        n2 = noise_row + SNR_length
-        n3 = noise_col - SNR_length
-        n4 = noise_col + SNR_length
-
-        m1 = mean_row - SNR_length
-        m2 = mean_row + SNR_length
-        m3 = mean_col - SNR_length
-        m4 = mean_col + SNR_length
-
-        snr = snr_homemade(np.rot90(final_im_ax),n1, n2, n3, n4, m1, m2, m3, m4)
-        SNR_num_label.grid_forget()
-        SNR_num_label = Label(frame11, text = str(np.abs(round(snr,2))), font=("Helvetica", 12))
-        SNR_num_label.grid(row = 2, column = 1) 
-
-    elif SNR_define == 'ori':
-        SNR_num_label.grid_forget()
-        SNR_num_label = Label(frame11, text = 'SNR not define!', font=("Helvetica", 12))
-        SNR_num_label.grid(row = 2, column = 1)
+    snr = snr_homemade(np.rot90(final_im_ax),A-m,A+m,B-m,B+m,a-m,a+m,b-m,b+m)
+    SNR_num_label.grid_forget()
+    SNR_num_label = Label(frame11, text = str(np.abs(round(snr,2))), font=("Helvetica", 12))
+    SNR_num_label.grid(row = 2, column = 1)
         
     # Update the history frame
     history('nonloc')
@@ -2705,6 +2664,7 @@ def filter_undo():
     global final_im_cor_original 
     global final_im_ax_original 
     global Labels
+    global SNR_num_label
     global ax_pos
     global ax_label
     global undo
@@ -2745,6 +2705,19 @@ def filter_undo():
     canvas3.draw()
     canvas3.get_tk_widget().grid(row = 1, column = 1, rowspan = 4) 
     plt.close()
+    
+    m = SNR_length
+    # std box
+    A = int(SNR_noise_box_center[1])
+    B = int(SNR_noise_box_center[0])
+    # mean box
+    a = int(SNR_mean_box_center[1])
+    b = int(SNR_mean_box_center[0])
+
+    snr = snr_homemade(np.rot90(final_im_ax_original),A-m,A+m,B-m,B+m,a-m,a+m,b-m,b+m)
+    SNR_num_label.grid_forget()
+    SNR_num_label = Label(frame11, text = str(np.abs(round(snr,2))), font=("Helvetica", 12))
+    SNR_num_label.grid(row = 2, column = 1)
     
     history('undo')
     undo = 'yes'
@@ -3403,6 +3376,10 @@ def exit_simu():
     global Delta_B0_import
     global seq_label2
     global SIM
+    global SNR_define
+    global SNR_length
+    global SNR_mean_box_center
+    global SNR_noise_box_center
     
     SIM = 0
         
@@ -3426,6 +3403,10 @@ def exit_simu():
     T2_star_import = 0
     B0_import = 0
     Delta_B0_import = 0
+    SNR_length = 5
+    SNR_noise_box_center = [105,20]
+    SNR_mean_box_center = [50,80]
+    SNR_define = 'ori'
     
     frame1.grid_forget()
     frame3.grid_forget()
