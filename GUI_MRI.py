@@ -113,7 +113,7 @@ def back(image_num):
 
 def tutorial_simu():
     """
-    Will open a new window with the first slide of the tutorial and enable the user to change slides or exit the tutorial
+    Will open a new window with the first slide of the simulator tutorial and enable the user to change slides or exit the tutorial
     Input: none 
     Output: none 
     """
@@ -152,6 +152,58 @@ def tutorial_simu():
     
     # Creating a list of all images
     image_list = [image1, image2, image3, image4, image5, image6, image7, image8, image9, image10, image11, image12, image13, image14, image15, image16, image17, image18, image19, image20, image21, image22, image23, image24] 
+    
+    # The status, bd for border, relief for sunnken style, anchor E -> so it is fixed at buttom right
+    status = Label(Tutorial, text="Image 1 of " + str(len(image_list)), bd=1, relief=SUNKEN, anchor=E)
+    # sticky for stretching, here from west to east
+    status.grid(row=2,column=0, columnspan=3, sticky=W+E)
+    
+    Image_label = Label(Tutorial, image=image1) # Show the first image
+    Image_label.grid(row=0,column=0,columnspan=3)
+    
+    # Buttons
+    back_button = Button(Tutorial, text="<<", command=back, state = DISABLED) # We don't want to be able to go back when the first image arrives
+    exit_button = Button(Tutorial, text="Exit tutorial", command=Tutorial.destroy)
+    forward_button = Button(Tutorial, text=">>", command=lambda: forward(2)) # We pass '2' to go to the next image
+    back_button.grid(row=1,column=0)
+    exit_button.grid(row=1,column=1)
+    forward_button.grid(row=1,column=2)    
+        
+def tutorial_gene():
+    """
+    Will open a new window with the first slide of the generator tutorial and enable the user to change slides or exit the tutorial
+    Input: none 
+    Output: none 
+    """
+    global Tutorial
+    global Image_label
+    global image_list
+    Tutorial = Toplevel() # New window
+    Tutorial.title("Tutorial")
+    
+    # The images have to come from the correct folder
+    image1 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial generator\Slide1.jpg"))
+    image2 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial generator\Slide2.jpg"))
+    image3 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial generator\Slide3.jpg"))
+    image4 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial generator\Slide4.jpg"))
+    image5 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial generator\Slide5.jpg"))
+    image6 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial generator\Slide6.jpg"))
+    image7 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial generator\Slide7.jpg"))
+    image8 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial generator\Slide8.jpg"))
+    image9 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial generator\Slide9.jpg"))
+    image10 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial generator\Slide10.jpg"))
+    image11 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial generator\Slide11.jpg"))
+    image12 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial generator\Slide12.jpg"))
+    image13 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial generator\Slide13.jpg"))
+    image14 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial generator\Slide14.jpg"))
+    image15 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial generator\Slide15.jpg"))
+    image16 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial generator\Slide16.jpg"))
+    image17 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial generator\Slide17.jpg"))
+    image18 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial generator\Slide18.jpg"))
+    image19 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial generator\Slide19.jpg"))
+    
+    # Creating a list of all images
+    image_list = [image1, image2, image3, image4, image5, image6, image7, image8, image9, image10, image11, image12, image13, image14, image15, image16, image17, image18, image19] 
     
     # The status, bd for border, relief for sunnken style, anchor E -> so it is fixed at buttom right
     status = Label(Tutorial, text="Image 1 of " + str(len(image_list)), bd=1, relief=SUNKEN, anchor=E)
@@ -423,7 +475,9 @@ def reset():
     global Pre_def_seq
     global seq_label2
     global SNR_define
-    
+    global SNR_length
+    global SNR_noise_box_center
+    global SNR_mean_box_center
     global canvas1
     global canvas2
     global canvas3
@@ -432,7 +486,10 @@ def reset():
     canvas2.get_tk_widget().destroy()
     canvas3.get_tk_widget().destroy()
     
-    SNR_define = 'no'
+    SNR_define = 'ori'
+    SNR_length = 5
+    SNR_noise_box_center = [105,105]
+    SNR_mean_box_center = [40,50]
     
     J = [1, 2, 3]
     num = [128, 150, 135]
@@ -560,7 +617,7 @@ def snr_homemade(im,s1,s2,s3,s4,m1,m2,m3,m4):
         snr = m/std    
     return snr
 
-def SNR_vis():
+def SNR_measure():
     """
     Creates an interactive plot to visualise and define the boxes used in the computation of the SNR
     Input: None       
@@ -572,6 +629,7 @@ def SNR_vis():
     global SNR_define
     global B0_field
     global SNR_num_label
+    global final_im_ax
     
     TR = TR_entry.get(); TR = int(TR); TR = np.divide(TR,1000) # Divide by 1000 to have the values in milli
     TE = TE_entry.get(); TE = int(TE); TE = np.divide(TE,1000)
@@ -581,25 +639,8 @@ def SNR_vis():
     Data_mat = np.divide(FOV, Resolution)
     Data_mat = [int(Data_mat[0]), int(Data_mat[1]), int(Data_mat[2])]  
     
-    # loading the 3D distorted data
-    T1_3D_grad = np.load('Data\T1_3D_cer_lip_grad.npy')
-    T2_3D_grad = np.load('Data\T2_3D_cer_lip_grad.npy')
-    M0_3D_grad = np.load('Data\M0_3D_cer_lip_grad.npy')
-    B1map_3D_grad = np.load('Data\B1_3D_cer_lip_grad.npy')
-    
-    # Resizing
-    n_seq = np.zeros((T1_3D_grad.shape[0], Data_mat[1], Data_mat[2])); final_seq = np.zeros((Data_mat))
-    SE_3D = spin_echo_seq(TR, TE, T1_3D_grad, T2_3D_grad, M0_3D_grad); SE_3D = np.multiply(SE_3D, B1map_3D_grad)
-    # Resizing
-    for x in range(T1_3D_grad.shape[0]):
-        n_seq[x,:,:] = cv2.resize(SE_3D[x,:,:], dsize=(Data_mat[2], Data_mat[1]))
-    for x in range(Data_mat[1]):
-        final_seq[:,x,:] = cv2.resize(n_seq[:,x,:], dsize=(Data_mat[2], Data_mat[0]))
-    # Noise
-    n = noise_generation(Data_mat, Resolution, Bandwidth, B0_field)
-    
     fig, ax = plt.subplots() # figsize=(4, 4)
-    figSNR = pltsnr.interactivePlot(fig, ax, final_seq + n, Data_mat, snr_homemade, plotAxis = 2, fov = FOV)        
+    figSNR = pltsnr.interactivePlot(fig, ax, final_im_ax, Data_mat, snr_homemade, plotAxis = 2, fov = FOV)  
     plt.show() 
     
     # REMARK the coordinates in the boxes center vectors are defined on the data rotated 90 degree!
@@ -612,6 +653,51 @@ def SNR_vis():
         SNR_num_label.grid_forget()
         SNR_num_label = Label(frame11, text = str(np.abs(round(figSNR.snr,2))), font=("Helvetica", 12))
         SNR_num_label.grid(row = 2, column = 1) 
+        
+def SNR_visu():
+    """
+    Creates an interactive plot to visualise how the SNR is currently defined
+    Input: None       
+    Output: None 
+    """
+    global SNR_length
+    global SNR_noise_box_center
+    global SNR_mean_box_center
+    global SNR_define
+    global B0_field
+    global SNR_num_label
+    global final_im_ax
+    
+    fov1 = int(FOV1_entry.get()); fov2 = int(FOV2_entry.get()); fov3 = int(FOV3_entry.get()); FOV = [fov1, fov2, fov3]
+    res1 = float(Res1_entry.get()); res2 = float(Res2_entry.get()); res3 = float(Res3_entry.get()); Resolution = [res1, res2, res3]
+    Data_mat = np.divide(FOV, Resolution)
+    Data_mat = [int(Data_mat[0]), int(Data_mat[1]), int(Data_mat[2])]  
+    
+    arr2 = np.zeros((Data_mat[1], Data_mat[0])) # This array is only zeros with 2 white boxes
+    m = 5
+    M = 2*m
+    SNR_length = m
+    arrstd = np.ones(M)
+    arrm = np.ones(M)
+    arr2 = np.zeros((Data_mat[1], Data_mat[0])) # This array is only zeros with 2 white boxes
+    # std box
+    A = int(SNR_noise_box_center[1])
+    B = int(SNR_noise_box_center[0])
+    arr2[A-m:A+m, B-m] = arrstd
+    arr2[A-m:A+m, B+m] = arrstd
+    arr2[A-m, B-m:B+m] = arrstd
+    arr2[A+m, B-m:B+m] = arrstd
+    # mean box
+    a = int(SNR_mean_box_center[1])
+    b = int(SNR_mean_box_center[0])
+    arr2[a-m:a+m, b-m] = arrm
+    arr2[a-m:a+m, b+m] = arrm
+    arr2[a-m, b-m:b+m] = arrm
+    arr2[a+m, b-m:b+m] = arrm
+        
+    plt.imshow(np.rot90(final_im_ax) + 150*arr2, cmap = 'gray')
+    plt.title('SNR = ' + str(snr_homemade(np.rot90(final_im_ax),A-m,A+m,B-m,B+m,a-m,a+m,b-m,b+m)))
+    plt.show()
         
 #/////////// Functions computing a trapeze style 3D integral //////////////#        
 def Trapeze_integral_3D(data):
@@ -1881,9 +1967,37 @@ def run():
             SNR_num_label = Label(frame11, text = str(np.abs(round(snr,2))), font=("Helvetica", 12))
             SNR_num_label.grid(row = 2, column = 1) 
             
-        elif SNR_define == 'no':
+        elif SNR_define == 'ori':
+            
+            m = SNR_length
+            M = 2*SNR_length
+            arrstd = np.ones(M)
+            arrm = np.ones(M)
+            arr2 = np.zeros((Data_mat[1], Data_mat[0])) # This array is only zeros with 2 white boxes
+            # std box
+            A = int(SNR_noise_box_center[1])
+            B = int(SNR_noise_box_center[0])
+            arr2[A-m:A+m, B-m] = arrstd
+            arr2[A-m:A+m, B+m] = arrstd
+            arr2[A-m, B-m:B+m] = arrstd
+            arr2[A+m, B-m:B+m] = arrstd
+            # mean box
+            a = int(SNR_mean_box_center[1])
+            b = int(SNR_mean_box_center[0])
+            arr2[a-m:a+m, b-m] = arrm
+            arr2[a-m:a+m, b+m] = arrm
+            arr2[a-m, b-m:b+m] = arrm
+            arr2[a+m, b-m:b+m] = arrm
+
+            sli = Data_mat[2]
+            sli = sli//2
+            #plt.imshow(np.rot90(final[:,:,sli] + 150*arr2), cmap = 'gray')
+            #plt.title('SNR = ' + str(snr_homemade(np.rot90(final[:,:,sli]),A-m,A+m,B-m,B+m,a-m,a+m,b-m,b+m)))
+            #plt.show()
+            
+            snr = snr_homemade(np.rot90(final_im_ax),A-m,A+m,B-m,B+m,a-m,a+m,b-m,b+m)
             SNR_num_label.grid_forget()
-            SNR_num_label = Label(frame11, text = 'SNR not define!', font=("Helvetica", 12))
+            SNR_num_label = Label(frame11, text = str(np.abs(round(snr,2))), font=("Helvetica", 12))
             SNR_num_label.grid(row = 2, column = 1)
             
         # Update the history frame
@@ -2268,7 +2382,7 @@ def lowpass(s):
         SNR_num_label = Label(frame11, text = str(np.abs(round(snr,2))), font=("Helvetica", 12))
         SNR_num_label.grid(row = 2, column = 1) 
 
-    elif SNR_define == 'no':
+    elif SNR_define == 'ori':
         SNR_num_label.grid_forget()
         SNR_num_label = Label(frame11, text = 'SNR not define!', font=("Helvetica", 12))
         SNR_num_label.grid(row = 2, column = 1)
@@ -2366,7 +2480,7 @@ def highpass(s):
         SNR_num_label = Label(frame11, text = str(np.abs(round(snr,2))), font=("Helvetica", 12))
         SNR_num_label.grid(row = 2, column = 1) 
 
-    elif SNR_define == 'no':
+    elif SNR_define == 'ori':
         SNR_num_label.grid_forget()
         SNR_num_label = Label(frame11, text = 'SNR not define!', font=("Helvetica", 12))
         SNR_num_label.grid(row = 2, column = 1)
@@ -2462,7 +2576,7 @@ def gauss(sig):
         SNR_num_label = Label(frame11, text = str(np.abs(round(snr,2))), font=("Helvetica", 12))
         SNR_num_label.grid(row = 2, column = 1) 
 
-    elif SNR_define == 'no':
+    elif SNR_define == 'ori':
         SNR_num_label.grid_forget()
         SNR_num_label = Label(frame11, text = 'SNR not define!', font=("Helvetica", 12))
         SNR_num_label.grid(row = 2, column = 1)
@@ -2573,7 +2687,7 @@ def non_local(H, s, d):
         SNR_num_label = Label(frame11, text = str(np.abs(round(snr,2))), font=("Helvetica", 12))
         SNR_num_label.grid(row = 2, column = 1) 
 
-    elif SNR_define == 'no':
+    elif SNR_define == 'ori':
         SNR_num_label.grid_forget()
         SNR_num_label = Label(frame11, text = 'SNR not define!', font=("Helvetica", 12))
         SNR_num_label.grid(row = 2, column = 1)
@@ -3728,12 +3842,16 @@ undo = 'no'
 fil_undo_button = Button(frame4, text = "Reset sequence image unfiltered", font=("Helvetica", f), command = filter_undo)
 fil_undo_button.grid(row = 0, column = 1, columnspan = 4)
 
+# Button to see how the SNR is currently defined   
+SNR_visu_button = Button(frame4, text = "Visalizing SNR", font=("Helvetica", f), command = SNR_visu).grid(row = 5, column = 0)
+
 # Button to define the boxes used in the computation of the SNR
-SNR_vis_button = Button(frame4, text = "Measuring SNR", font=("Helvetica", f), command = SNR_vis).grid(row = 5, column = 0)
-SNR_length = 0
-SNR_noise_box_center = [0,0]
-SNR_mean_box_center = [0,0]
-SNR_define = 'no' # String keeping track if the boxes to compute the SNR have be define or not
+SNR_measure_button = Button(frame4, text = "Measuring SNR", font=("Helvetica", f), command = SNR_measure).grid(row = 5, column = 1, columnspan =3)
+
+SNR_length = 5
+SNR_noise_box_center = [105,20]
+SNR_mean_box_center = [50,80]
+SNR_define = 'ori' # String keeping track if the boxes to compute the SNR are the original ones or have be modified by the user
 
 # Binding function to open webpage that offers the user information on the specific label (what is TR, TE, etc...?)    
 Low_pass_button.bind('<Button-3>', info_lowpass)
@@ -5104,6 +5222,9 @@ def open_gene():
     
     open_simulator.grid_forget()
     open_generator.grid_forget()
+    
+    # Opening the generator tutorial
+    tutorial_gene()
     
 def exit_gene():
     """
