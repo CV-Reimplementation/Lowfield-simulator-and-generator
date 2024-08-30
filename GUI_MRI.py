@@ -474,7 +474,6 @@ def reset():
     global warning_label
     global Pre_def_seq
     global seq_label2
-    global SNR_define
     global SNR_length
     global SNR_noise_box_center
     global SNR_mean_box_center
@@ -486,7 +485,6 @@ def reset():
     canvas2.get_tk_widget().destroy()
     canvas3.get_tk_widget().destroy()
     
-    SNR_define = 'ori'
     SNR_length = 5
     SNR_noise_box_center = [105,105]
     SNR_mean_box_center = [40,50]
@@ -626,7 +624,6 @@ def SNR_measure():
     global SNR_length
     global SNR_noise_box_center
     global SNR_mean_box_center
-    global SNR_define
     global B0_field
     global SNR_num_label
     global final_im_ax
@@ -649,7 +646,6 @@ def SNR_measure():
     SNR_mean_box_center = [int(figSNR.mean_box_center[0]), int(figSNR.mean_box_center[1])]
     
     if np.sum(SNR_noise_box_center) != 0 and np.sum(SNR_mean_box_center) != 0:
-        SNR_define = 'yes'
         SNR_num_label.grid_forget()
         SNR_num_label = Label(frame11, text = str(np.abs(round(figSNR.snr,2))), font=("Helvetica", 12))
         SNR_num_label.grid(row = 2, column = 1) 
@@ -663,7 +659,6 @@ def SNR_visu():
     global SNR_length
     global SNR_noise_box_center
     global SNR_mean_box_center
-    global SNR_define
     global B0_field
     global SNR_num_label
     global final_im_ax
@@ -1959,57 +1954,18 @@ def run():
         canvas3.get_tk_widget().grid(row = 1, column = 1, rowspan = 4) 
         plt.close()
                      
-        if SNR_define == 'yes':    
-            
-            m = SNR_length
-            # std box
-            A = int(SNR_noise_box_center[1])
-            B = int(SNR_noise_box_center[0])
-            # mean box
-            a = int(SNR_mean_box_center[1])
-            b = int(SNR_mean_box_center[0])
-            
-            snr = snr_homemade(np.rot90(final_im_ax),A-m,A+m,B-m,B+m,a-m,a+m,b-m,b+m)
-            SNR_num_label.grid_forget()
-            SNR_num_label = Label(frame11, text = str(np.abs(round(snr,2))), font=("Helvetica", 12))
-            SNR_num_label.grid(row = 2, column = 1)
-            
-            """
-            noise_col = SNR_noise_box_center[0]
-            noise_row = SNR_noise_box_center[1]
-            mean_col = SNR_mean_box_center[0]
-            mean_row = SNR_mean_box_center[1]
+        m = SNR_length
+        # std box
+        A = int(SNR_noise_box_center[1])
+        B = int(SNR_noise_box_center[0])
+        # mean box
+        a = int(SNR_mean_box_center[1])
+        b = int(SNR_mean_box_center[0])
 
-            n1 = noise_row - SNR_length
-            n2 = noise_row + SNR_length
-            n3 = noise_col - SNR_length
-            n4 = noise_col + SNR_length
-
-            m1 = mean_row - SNR_length
-            m2 = mean_row + SNR_length
-            m3 = mean_col - SNR_length
-            m4 = mean_col + SNR_length
-
-            snr = snr_homemade(np.rot90(final_im_ax),n1, n2, n3, n4, m1, m2, m3, m4)
-            SNR_num_label.grid_forget()
-            SNR_num_label = Label(frame11, text = str(np.abs(round(snr,2))), font=("Helvetica", 12))
-            SNR_num_label.grid(row = 2, column = 1) 
-            """
-            
-        elif SNR_define == 'ori':
-            
-            m = SNR_length
-            # std box
-            A = int(SNR_noise_box_center[1])
-            B = int(SNR_noise_box_center[0])
-            # mean box
-            a = int(SNR_mean_box_center[1])
-            b = int(SNR_mean_box_center[0])
-            
-            snr = snr_homemade(np.rot90(final_im_ax),A-m,A+m,B-m,B+m,a-m,a+m,b-m,b+m)
-            SNR_num_label.grid_forget()
-            SNR_num_label = Label(frame11, text = str(np.abs(round(snr,2))), font=("Helvetica", 12))
-            SNR_num_label.grid(row = 2, column = 1)
+        snr = snr_homemade(np.rot90(final_im_ax),A-m,A+m,B-m,B+m,a-m,a+m,b-m,b+m)
+        SNR_num_label.grid_forget()
+        SNR_num_label = Label(frame11, text = str(np.abs(round(snr,2))), font=("Helvetica", 12))
+        SNR_num_label.grid(row = 2, column = 1)
             
         # Update the history frame
         history('seq')
@@ -3376,7 +3332,6 @@ def exit_simu():
     global Delta_B0_import
     global seq_label2
     global SIM
-    global SNR_define
     global SNR_length
     global SNR_mean_box_center
     global SNR_noise_box_center
@@ -3406,7 +3361,6 @@ def exit_simu():
     SNR_length = 5
     SNR_noise_box_center = [105,20]
     SNR_mean_box_center = [50,80]
-    SNR_define = 'ori'
     
     frame1.grid_forget()
     frame3.grid_forget()
@@ -3832,7 +3786,6 @@ SNR_measure_button = Button(frame4, text = "Measuring SNR", font=("Helvetica", f
 SNR_length = 5
 SNR_noise_box_center = [105,20]
 SNR_mean_box_center = [50,80]
-SNR_define = 'ori' # String keeping track if the boxes to compute the SNR are the original ones or have be modified by the user
 
 # Binding function to open webpage that offers the user information on the specific label (what is TR, TE, etc...?)    
 Low_pass_button.bind('<Button-3>', info_lowpass)
