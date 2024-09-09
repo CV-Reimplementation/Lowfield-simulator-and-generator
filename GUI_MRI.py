@@ -149,9 +149,10 @@ def tutorial_simu():
     image23 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial simulator\Slide23.jpg"))
     image24 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial simulator\Slide24.jpg"))
     image25 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial simulator\Slide25.jpg"))
+    image26 = ImageTk.PhotoImage(Image.open(r"Tutorial images\Tutorial simulator\Slide26.jpg"))
     
     # Creating a list of all images
-    image_list = [image1, image2, image3, image4, image5, image6, image7, image8, image9, image10, image11, image12, image13, image14, image15, image16, image17, image18, image19, image20, image21, image22, image23, image24] 
+    image_list = [image1, image2, image3, image4, image5, image6, image7, image8, image9, image10, image11, image12, image13, image14, image15, image16, image17, image18, image19, image20, image21, image22, image23, image24, image25, image26] 
     
     # The status, bd for border, relief for sunnken style, anchor E -> so it is fixed at buttom right
     status = Label(Tutorial, text="Image 1 of " + str(len(image_list)), bd=1, relief=SUNKEN, anchor=E)
@@ -669,12 +670,13 @@ def SNR_visu():
     Data_mat = [int(Data_mat[0]), int(Data_mat[1]), int(Data_mat[2])]  
     
     arr2 = np.zeros((Data_mat[1], Data_mat[0])) # This array is only zeros with 2 white boxes
-    m = 5
+    m = SNR_length
     M = 2*m
     SNR_length = m
     arrstd = np.ones(M)
     arrm = np.ones(M)
     arr2 = np.zeros((Data_mat[1], Data_mat[0])) # This array is only zeros with 2 white boxes
+    
     # std box
     A = int(SNR_noise_box_center[1])
     B = int(SNR_noise_box_center[0])
@@ -1616,6 +1618,8 @@ def run():
     global canvas3
     global time 
     global Bd_by_pixel
+    global SNR_noise_box_center
+    global SNR_mean_box_center
     
     canvas1.get_tk_widget().destroy()
     canvas2.get_tk_widget().destroy()
@@ -1657,8 +1661,6 @@ def run():
     
     minimumTE = Data_mat[0]/(2*Bandwidth)
     minimumTR = 2*minimumTE
-    
-    c = 30  # number of point to be computed in t2 decay signal for TSE and post_seq_TSE
         
     final_zeros = np.zeros((Data_mat))
     
@@ -3332,10 +3334,51 @@ def exit_simu():
     global Delta_B0_import
     global seq_label2
     global SIM
+    global SNR_num_label
     global SNR_length
     global SNR_mean_box_center
     global SNR_noise_box_center
+    global Time_scan_num_label
+    global Bd_by_pixel_label
+    global SNR_num_label
+    global minimumTE_num_label
+    global minimumTR_num_label
+    global warning_label
     
+    TR_entry.delete(0, END); TR_entry.insert(0, '500')
+    TE_entry.delete(0, END); TE_entry.insert(0, '20')
+    TI_entry.delete(0, END); TI_entry.insert(0, '250')
+    FOV1_entry.delete(0, END); FOV1_entry.insert(0, '250')
+    FOV2_entry.delete(0, END); FOV2_entry.insert(0, '300')
+    FOV3_entry.delete(0, END); FOV3_entry.insert(0, '275')
+    Res1_entry.delete(0, END); Res1_entry.insert(0, '1.95')
+    Res2_entry.delete(0, END); Res2_entry.insert(0, '2.34')
+    Res3_entry.delete(0, END); Res3_entry.insert(0, '2.15')
+    Data_mat1_entry.delete(0,END); Data_mat1_entry.insert(0,'128')
+    Data_mat2_entry.delete(0,END); Data_mat2_entry.insert(0,'128')
+    Data_mat3_entry.delete(0,END); Data_mat3_entry.insert(0,'128')
+    Bandwidth_entry.delete(0, END); Bandwidth_entry.insert(0, '40000')
+    Alpha_entry.delete(0, END); Alpha_entry.insert(0, '45')
+    G_entry.delete(0,END); G_entry.insert(0, '10')
+    smalldelta_entry.delete(0,END); smalldelta_entry.insert(0, '1')
+    bigdelta_entry.delete(0,END);bigdelta_entry.insert(0, '2')
+
+    Time_scan_num_label.grid_forget()
+    Bd_by_pixel_label.grid_forget()
+    SNR_num_label.grid_forget()
+    minimumTE_num_label.grid_forget()
+    minimumTR_num_label.grid_forget()
+    warning_label.grid_forget()
+    
+    minimumTE = 0.00128 * 1000 # *1000 to have it in ms
+    minimumTR = 2 * minimumTE
+    Time_scan_num_label = Label(frame11, text = "2:16:32", font=("Helvetica", f));         Time_scan_num_label.grid(row = 0, column = 1)
+    Bd_by_pixel_label = Label(frame11, text = "390.62", font=("Helvetica", f));            Bd_by_pixel_label.grid(row = 1, column = 1)
+    SNR_num_label = Label(frame11, text = "      ", font=("Helvetica", f));                SNR_num_label.grid(row = 2, column = 1)
+    minimumTE_num_label = Label(frame11, text = minimumTE, font=("Helvetica", f));         minimumTE_num_label.grid(row = 3, column = 1)
+    minimumTR_num_label = Label(frame11, text = minimumTR, font=("Helvetica", f));         minimumTR_num_label.grid(row = 3, column = 1)
+    minimumTR_num_label.grid_forget() 
+
     SIM = 0
         
     seq_label2.grid_forget()
@@ -3352,6 +3395,8 @@ def exit_simu():
     canvas1.get_tk_widget().destroy()
     canvas2.get_tk_widget().destroy()
     canvas3.get_tk_widget().destroy()
+    
+    SNR_num_label.grid_forget();SNR_num_label = Label(frame11, text = "  ", font=("Helvetica", f));SNR_num_label.grid(row = 2, column = 1)
     
     T1_import = 0
     T2_import = 0
@@ -3778,7 +3823,7 @@ fil_undo_button = Button(frame4, text = "Reset sequence image unfiltered", font=
 fil_undo_button.grid(row = 0, column = 1, columnspan = 4)
 
 # Button to see how the SNR is currently defined   
-SNR_visu_button = Button(frame4, text = "Visalizing SNR", font=("Helvetica", f), command = SNR_visu).grid(row = 5, column = 0)
+SNR_visu_button = Button(frame4, text = "Visualizing SNR", font=("Helvetica", f), command = SNR_visu).grid(row = 5, column = 0)
 
 # Button to define the boxes used in the computation of the SNR
 SNR_measure_button = Button(frame4, text = "Measuring SNR", font=("Helvetica", f), command = SNR_measure).grid(row = 5, column = 1, columnspan =3)
