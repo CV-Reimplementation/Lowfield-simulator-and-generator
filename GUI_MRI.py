@@ -277,7 +277,7 @@ def UPDATE(event):
         FOV = [fov1, fov2, fov3]
         Resolution = [res1, res2, res3]
         Data_mat = [dat1, dat2, dat3]
-
+        
         if np.prod(Data_mat) != Data_matrix_check: # User changed the data matrix size
 
             Resolution[0] = np.round(np.divide(FOV[0],Data_mat[0]),2)
@@ -481,14 +481,21 @@ def reset():
     global canvas1
     global canvas2
     global canvas3
+    global FOV_check
+    global Res_check
+    global Data_matrix_check
+    
+    FOV_check = 20625000 # this value is 250*300*275 and will be used to see if the FOV was changed by the user
+    Res_check = 9.81045 # this value is 1.95*2.34*2.15 and will be used to see if the resolution was changed by the user
+    Data_matrix_check = 2097152 # this value is 128*128*128 and will be used to see if the Data matrix size was changed by the user
     
     canvas1.get_tk_widget().destroy()
     canvas2.get_tk_widget().destroy()
     canvas3.get_tk_widget().destroy()
     
     SNR_length = 5
-    SNR_noise_box_center = [105,105]
-    SNR_mean_box_center = [40,50]
+    SNR_noise_box_center = [105,20]
+    SNR_mean_box_center = [50,80]
     
     J = [1, 2, 3]
     num = [128, 150, 135]
@@ -676,22 +683,22 @@ def SNR_visu():
     arrstd = np.ones(M)
     arrm = np.ones(M)
     arr2 = np.zeros((Data_mat[1], Data_mat[0])) # This array is only zeros with 2 white boxes
-    
+        
     # std box
     A = int(SNR_noise_box_center[1])
     B = int(SNR_noise_box_center[0])
     arr2[A-m:A+m, B-m] = arrstd
-    arr2[A-m:A+m, B+m] = arrstd
+    arr2[A-m:A+m, B+m-1] = arrstd
     arr2[A-m, B-m:B+m] = arrstd
-    arr2[A+m, B-m:B+m] = arrstd
+    arr2[A+m-1, B-m:B+m] = arrstd
     # mean box
     a = int(SNR_mean_box_center[1])
-    b = int(SNR_mean_box_center[0])
+    b = int(SNR_mean_box_center[0])    
     arr2[a-m:a+m, b-m] = arrm
-    arr2[a-m:a+m, b+m] = arrm
+    arr2[a-m:a+m, b+m-1] = arrm
     arr2[a-m, b-m:b+m] = arrm
-    arr2[a+m, b-m:b+m] = arrm
-        
+    arr2[a+m-1, b-m:b+m] = arrm       
+    
     plt.imshow(np.rot90(final_im_ax) + 150*arr2, cmap = 'gray')
     plt.title('SNR = ' + str(snr_homemade(np.rot90(final_im_ax),A-m,A+m,B-m,B+m,a-m,a+m,b-m,b+m)))
     plt.show()
@@ -1955,6 +1962,12 @@ def run():
         canvas3.draw()
         canvas3.get_tk_widget().grid(row = 1, column = 1, rowspan = 4) 
         plt.close()
+        
+        # Check if the boxes used for the SNR are in the image, if one is outside the position is redefined
+        if SNR_noise_box_center[0] > Data_mat[0] or SNR_noise_box_center[1] > Data_mat[1]:
+            SNR_noise_box_center = [(Data_mat[0]-15),15]
+        if SNR_mean_box_center[0] > Data_mat[0] or SNR_mean_box_center[1] > Data_mat[1]:
+            SNR_mean_box_center = [(Data_mat[0]//5)*2,(Data_mat[1]//6)*4] # To have the mean box inside the brain
                      
         m = SNR_length
         # std box
@@ -1963,7 +1976,6 @@ def run():
         # mean box
         a = int(SNR_mean_box_center[1])
         b = int(SNR_mean_box_center[0])
-
         snr = snr_homemade(np.rot90(final_im_ax),A-m,A+m,B-m,B+m,a-m,a+m,b-m,b+m)
         SNR_num_label.grid_forget()
         SNR_num_label = Label(frame11, text = str(np.abs(round(snr,2))), font=("Helvetica", 12))
